@@ -136,7 +136,7 @@ function addClickListeners(scatterplotDiv, markerOpacity) {
     scatterplotDiv.on('plotly_doubleclick', function() {
         if (activeClickIndex !== null) {
             const imputedIndices = all_points[activeClickIndex]?.imputedIndices || [];
-            //console.log("Unhovered Point Index: ", activeHoverIndex);
+            //console.log("Unhovered Point Index: ", activeHoverIndex);dasdadadadad
             //console.log("Imputed Indices to Hide: ", imputedIndices);
 
             // Reset the opacity for imputed points to 0 and keep average points fully visible
