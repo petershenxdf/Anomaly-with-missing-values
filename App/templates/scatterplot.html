@@ -1,0 +1,24 @@
+<div class="scatterplot">
+    <link rel="stylesheet" href="/static/css/scatterplot.css">
+    <label for="dataset-select">Choose a dataset:</label>
+    <select id="dataset-select">
+        <option value="">Select a dataset</option>
+        {% for dataset in datasets %}
+        <option value="{{ dataset }}">{{ dataset }}</option>
+        {% endfor %}
+    </select>
+    <div>
+        <label for="color-select">Choose a cluster color: </label>
+        <select id="color-select">
+            <option value="red">Red</option>
+            <option value="blue">Blue</option>
+            <option value="green">Green</option>
+            <option value="yellow">Yellow</option>
+            <option value="orange">Orange</option>
+        </select>
+    </div>
+    <div id="scatterplot"></div>
+
+    <!-- Scatterplot specific JS -->
+    <script src="{{ url_for('static', filename='js/scatterplot.js') }}"></script>
+</div>

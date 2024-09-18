@@ -1,0 +1,12 @@
+:root {
+    --line-chart-width: var(--visual-width);
+    --line-chart-height: var(--visual-height);
+}
+
+#line-chart {
+    width: var(--line-chart-width);
+    height: var(--line-chart-height);
+    background-color: #fff5e6;  /* Light background for the line chart */
+    border: 1px solid #ccc;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}

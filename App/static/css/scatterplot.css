@@ -1,0 +1,15 @@
+:root {
+    --scatterplot-width: 96%;    /* Adjust width (e.g., 96% of its container) */
+    --scatterplot-height: 80%; /* Adjust the height */
+    --scatterplot-dot-size: 10px;
+}
+
+#scatterplot {
+    grid-column: 1;  /* Place scatterplot in the first column */
+    grid-row: 1;     /* Place in the first row */
+    width: var(--scatterplot-width);  /* Use width variable */
+    height: var(--scatterplot-height); /* Use height variable */
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}

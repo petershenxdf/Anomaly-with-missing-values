@@ -1,0 +1,21 @@
+:root {
+    --dashboard-width: 90%;
+    --dashboard-height: 100vh;
+    --dashboard-margin: 20px auto;
+
+    /* Visualization Sizes */
+    --grid-columns: 70% 30%;  /* Scatterplot takes 70%, line chart takes 30% */
+    --grid-rows: auto;        /* Rows will resize based on content */
+}
+
+.dashboard-container {
+    display: grid;
+    grid-template-columns: var(--grid-columns);  /* Two columns: 70% for scatterplot, 30% for line chart */
+    grid-template-rows: var(--grid-rows);        /* Auto rows */
+    gap: 20px;                                   /* Space between visualizations */
+    width: var(--dashboard-width);
+    height: var(--dashboard-height);
+    margin: var(--dashboard-margin);
+    border: 1px solid #ccc;
+}
+

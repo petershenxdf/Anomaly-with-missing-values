@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visualization Dashboard</title>
+    
+    <!-- Link CSS files -->
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+
+    <!-- Plotly and other necessary libraries -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+<div class="dashboard-container">
+    <!-- Dynamic containers for the visualizations -->
+    <div id="scatterplot-container" class="visualization"></div>
+    <div id="bar-chart-container" class="visualization"></div>
+    <div id="line-chart-container" class="visualization"></div>
+</div>
+
+<!-- JavaScript to dynamically load each visualization -->
+<script src="/static/js/loadVisualizations.js"></script>
+
+</body>
+</html>

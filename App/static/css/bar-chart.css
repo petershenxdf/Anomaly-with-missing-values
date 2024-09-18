@@ -1,0 +1,12 @@
+:root {
+    --bar-chart-width: var(--visual-width);
+    --bar-chart-height: var(--visual-height);
+}
+
+#bar-chart {
+    width: var(--bar-chart-width);
+    height: var(--bar-chart-height);
+    background-color: #e6f7ff;  /* Light background for the bar chart */
+    border: 1px solid #ccc;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
