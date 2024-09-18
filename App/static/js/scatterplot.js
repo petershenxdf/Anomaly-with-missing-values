@@ -1,5 +1,5 @@
 let scatterplotDiv;  // Declare scatterplotDiv as a global variable
-let imputationData = {};  // Stores data related to imputation points and average points
+
 let all_points;
 document.getElementById('dataset-select').addEventListener('change', function() {
     const dataset = this.value;
@@ -17,7 +17,7 @@ document.getElementById('dataset-select').addEventListener('change', function() 
                 alert(data.error);
             } else {
                 mdsData = data.points;  // Store MDS data including imputed points
-                imputationData = data.imputation_data;  // Store imputation data (average + imputation points)
+                //imputationData = data.imputation_data;  // Store imputation data (average + imputation points)
                 all_points=data.all_points
                 //console.log("all Data:", all_points);  // Log imputationData to inspect its structure
                 drawPlotlyScatterplot(mdsData);  // Draw the scatterplot
@@ -100,14 +100,14 @@ function drawPlotlyScatterplot(points) {
     };
 
     Plotly.newPlot(scatterplotDiv, [trace], layout).then(() => {
-        addHoverListeners(scatterplotDiv, markerOpacity);  // Add hover listeners after plot is rendered
+        addClickListeners(scatterplotDiv, markerOpacity);  // Add hover listeners after plot is rendered
     });
 }
 
-function addHoverListeners(scatterplotDiv, markerOpacity) {
-    let activeHoverIndex = null;
+function addClickListeners(scatterplotDiv, markerOpacity) {
+    let activeClickIndex = null;
 
-    scatterplotDiv.on('plotly_hover', function(data) {
+    scatterplotDiv.on('plotly_click', function(data) {
         console.log(data);
         const pointIndex = data.points[0].pointIndex;
         const isMainPoint = data.points[0].curveNumber === 0;
@@ -115,8 +115,8 @@ function addHoverListeners(scatterplotDiv, markerOpacity) {
         //console.log("Hovered Point Index: ", pointIndex, "Is Main Point: ", isMainPoint);
 
         // Ensure hover effects are applied only to average imputed points
-        if (isMainPoint && pointIndex !== activeHoverIndex && all_points[pointIndex]?.isAverage) {
-            activeHoverIndex = pointIndex;
+        if (isMainPoint && pointIndex !== activeClickIndex && all_points[pointIndex]?.isAverage) {
+            activeClickIndex = pointIndex;
 
             const imputedIndices = all_points[pointIndex]?.imputedIndices || [];
             console.log("Imputed Indices to Show: ", imputedIndices);
@@ -133,9 +133,9 @@ function addHoverListeners(scatterplotDiv, markerOpacity) {
         }
     });
 
-    scatterplotDiv.on('plotly_unhover', function() {
-        if (activeHoverIndex !== null) {
-            const imputedIndices = all_points[activeHoverIndex]?.imputedIndices || [];
+    scatterplotDiv.on('plotly_doubleclick', function() {
+        if (activeClickIndex !== null) {
+            const imputedIndices = all_points[activeClickIndex]?.imputedIndices || [];
             //console.log("Unhovered Point Index: ", activeHoverIndex);
             //console.log("Imputed Indices to Hide: ", imputedIndices);
 
@@ -150,7 +150,7 @@ function addHoverListeners(scatterplotDiv, markerOpacity) {
             Plotly.restyle(scatterplotDiv, { 'marker.opacity': [resetOpacity] });
         }
 
-        activeHoverIndex = null;
+        activeClickIndex = null;
     });
 }
 

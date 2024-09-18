@@ -75,16 +75,16 @@ def load_dataset():
         print(f"Loaded dataset shape: {df.shape}")
         
         # Check if 500 rows are loaded
-        if df.shape[0] != 500:
-            print(f"Warning: Expected 500 rows but got {df.shape[0]} rows.")
+        #if df.shape[0] != 500:
+            #print(f"Warning: Expected 500 rows but got {df.shape[0]} rows.")
 
         numeric_cols = df.select_dtypes(include=[np.number])
-        print(f"Numeric columns shape: {numeric_cols.shape}")
+        #print(f"Numeric columns shape: {numeric_cols.shape}")
 
         if numeric_cols.empty:
             return jsonify({'error': 'No numeric data in the selected dataset'}), 400
 
-        imputation_data = {}  # To store imputation data with average and imputed points
+         # To store imputation data with average and imputed points
         imputed_data = []
         avg_imputed_points = []
         non_imputed_points = []
@@ -110,7 +110,7 @@ def load_dataset():
                 
                 imputed_data.extend(imputed_points)
                 avg_imputed_point1 = imputed_points1.mean(axis=0)
-                print('avg shape:'+str(avg_imputed_point1.shape))
+                #print('avg shape:'+str(avg_imputed_point1.shape))
                 
                 all_points[current_key]=avg_imputed_point1
                 all_points[current_key+1:current_key+6]=imputed_points1
@@ -127,11 +127,7 @@ def load_dataset():
                          'imputedIndices':[]
                         })
                     
-                # Store which points are average and which are the 5 corresponding imputed points
-                imputation_data[len(avg_imputed_points) - 1] = {
-                    'isAverage': True,
-                    'imputedIndices': list(range(len(imputed_data) - 5, len(imputed_data)))
-                }
+               
             else:
                 non_imputed_points.append(row.values[:2])
                 points.append({
@@ -145,9 +141,9 @@ def load_dataset():
         all_num_zero=np.sum(all_points==0)
         #print(f"Non-imputed points: {len(non_imputed_points)}")
         #print(f"Average imputed points: {len(avg_imputed_points)}")
-        print(f"Imputed points: {len(imputed_data)}")
-        print(f"num zeros in all points: {all_num_zero}")
-        print(points)
+        #print(f"Imputed points: {len(imputed_data)}")
+        #print(f"num zeros in all points: {all_num_zero}")
+        #print(points)
         # Combine all points: non-imputed, average imputed points, and imputed points
         all_points1 = np.concatenate([non_imputed_points, avg_imputed_points, imputed_data], axis=0)
         print(f"Total points passed to MDS: {all_points.shape[0]}")
@@ -158,7 +154,7 @@ def load_dataset():
 
         return jsonify({
             'points': mds_result.tolist(),
-            'imputation_data': imputation_data,
+            
              'all_points':points# Send imputation data to front-end
         })
 
