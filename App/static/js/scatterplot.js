@@ -125,8 +125,10 @@ function addClickListeners(scatterplotDiv, markerOpacity) {
             const newOpacity = markerOpacity.map((_, index) => {
                 if (index === pointIndex || imputedIndices.includes(index)) {
                     return 1; // Show the hovered average point and its imputed points
+                }else if(!all_points[index]?.isImputated || all_points[index]?.isAverage){
+                    return 0.3;
                 }
-                return 0.3; // Make other points semi-transparent
+                 return 0
             });
 
             Plotly.restyle(scatterplotDiv, { 'marker.opacity': [newOpacity] });

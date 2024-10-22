@@ -84,10 +84,7 @@ def load_dataset():
         if numeric_cols.empty:
             return jsonify({'error': 'No numeric data in the selected dataset'}), 400
 
-         # To store imputation data with average and imputed points
-        imputed_data = []
-        avg_imputed_points = []
-        non_imputed_points = []
+         
         points=[]
         
         
@@ -102,13 +99,10 @@ def load_dataset():
             #print()
             current_key=len(points)
             if row.isnull().any():  # If there's a missing value
-                imputed_points = np.random.randn(5, 2)
+                
                 imputed_points1 = np.random.randn(5, df.shape[1])# Fake imputation logic (replace with actual imputation)
                 
-                avg_imputed_point = imputed_points.mean(axis=0)
-                avg_imputed_points.append(avg_imputed_point)
                 
-                imputed_data.extend(imputed_points)
                 avg_imputed_point1 = imputed_points1.mean(axis=0)
                 #print('avg shape:'+str(avg_imputed_point1.shape))
                 
@@ -129,7 +123,7 @@ def load_dataset():
                     
                
             else:
-                non_imputed_points.append(row.values[:2])
+                #non_imputed_points.append(row.values[:2])
                 points.append({
                     'isAverage': False,
                     'isImputated':False,
@@ -137,19 +131,18 @@ def load_dataset():
                     })
                 all_points[current_key]=row
 
-        # Log points data before concatenation
-        all_num_zero=np.sum(all_points==0)
+
         #print(f"Non-imputed points: {len(non_imputed_points)}")
         #print(f"Average imputed points: {len(avg_imputed_points)}")
         #print(f"Imputed points: {len(imputed_data)}")
         #print(f"num zeros in all points: {all_num_zero}")
         #print(points)
         # Combine all points: non-imputed, average imputed points, and imputed points
-        all_points1 = np.concatenate([non_imputed_points, avg_imputed_points, imputed_data], axis=0)
-        print(f"Total points passed to MDS: {all_points.shape[0]}")
+        #all_points1 = np.concatenate([non_imputed_points, avg_imputed_points, imputed_data], axis=0)
+        #print(f"Total points passed to MDS: {all_points.shape[0]}")
 
         # Compute MDS projection with distances
-        mds_result = compute_mds_with_cuml_distances(all_points1, dataset_name)
+        mds_result = compute_mds_with_cuml_distances(all_points, dataset_name)
         print(f"MDS result shape: {mds_result.shape}")
 
         return jsonify({
