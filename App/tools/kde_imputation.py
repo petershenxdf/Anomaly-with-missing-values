@@ -1,68 +1,70 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Oct 22 22:31:01 2024
-
-@author: jiahao
-"""
 import numpy as np
 import pandas as pd
 from sklearn.neighbors import KernelDensity
+from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
-def kde_imputation(data, bandwidth=1.0):
-    """
-    Imputes missing values using Kernel Density Estimation.
+# Function to introduce missing values into the dataset
+def introduce_missing_values(data, missing_fraction=0.1, random_state=0):
+    np.random.seed(random_state)
+    data_missing = data.copy()
+    mask = np.random.rand(*data.shape) < missing_fraction
+    data_missing[mask] = np.nan
+    return data_missing, mask
 
-    Parameters:
-    - data: pandas DataFrame with missing values.
-    - bandwidth: Bandwidth parameter for KDE.
-
-    Returns:
-    - Imputed pandas DataFrame.
-    """
+# KDE-based imputation function
+def kde_imputation(data):
     data_imputed = data.copy()
     for column in data.columns:
-        if data[column].isnull().any():
-            # Get non-missing values for the column
-            observed_values = data[column].dropna().values.reshape(-1, 1)
-            kde = KernelDensity(kernel='gaussian', bandwidth=bandwidth).fit(observed_values)
-
-            # Number of missing values
-            n_missing = data[column].isnull().sum()
-
-            # Sample from the estimated density
-            imputed_values = kde.sample(n_missing).flatten()
-
-            # Fill in the missing values
-            data_imputed.loc[data_imputed[column].isnull(), column] = imputed_values
+        missing_indices = data[column].isna()
+        if missing_indices.any():
+            # Extract observed data
+            observed_data = data.loc[~missing_indices, column].values.reshape(-1, 1)
+            
+            # Ensure sufficient number of observed points
+            if len(observed_data) < 5:
+                data_imputed.loc[missing_indices, column] = np.mean(observed_data)
+                continue
+            
+            # Scale the observed data to reduce variance
+            scaler = StandardScaler()
+            observed_data_scaled = scaler.fit_transform(observed_data)
+            
+            # Calculate bandwidth using Silverman's Rule of Thumb
+            n = len(observed_data)
+            sigma = np.std(observed_data_scaled)
+            bandwidth = (4 * (sigma ** 5) / (3 * n)) ** (1 / 5)
+            
+            # Fit KDE to observed data
+            kde = KernelDensity(bandwidth=bandwidth, kernel='gaussian')
+            kde.fit(observed_data_scaled)
+            
+            # Estimate the mean of the KDE distribution to impute missing values
+            mean_value_scaled = np.mean(observed_data_scaled)
+            mean_value = scaler.inverse_transform([[mean_value_scaled]])[0, 0]
+            data_imputed.loc[missing_indices, column] = mean_value
     return data_imputed
 
 if __name__ == "__main__":
-    # User-defined parameters
-    csv_file = 'anomaly.csv'  # Replace with your CSV file name
-    missing_fraction = 0.1      # Fraction of values to set as missing (e.g., 0.1 for 10%)
-
-    # Read the CSV file
-    df = pd.read_csv(csv_file)
-
+    # Load the dataset
+    df = pd.read_csv('anomaly.csv')
+    
     # Keep a copy of the original data for evaluation
     df_original = df.copy()
-
-    # Randomly introduce missing values
-    np.random.seed(0)  # For reproducibility
-    mask = np.random.rand(*df.shape) < missing_fraction
-    df[mask] = np.nan
-
-    # Impute missing values
-    df_imputed = kde_imputation(df, bandwidth=1.0)
-
+    
+    # Introduce missing values (10% of the cells)
+    missing_fraction = 0.1
+    df_missing, mask_missing = introduce_missing_values(df, missing_fraction=missing_fraction)
+    
+    # Impute missing values using KDE with Silverman's Rule of Thumb for bandwidth
+    df_imputed = kde_imputation(df_missing)
+    
     # Evaluate imputation accuracy
-    mask_missing = mask
     mse = mean_squared_error(df_original.values[mask_missing], df_imputed.values[mask_missing])
     mae = mean_absolute_error(df_original.values[mask_missing], df_imputed.values[mask_missing])
     r2 = r2_score(df_original.values[mask_missing], df_imputed.values[mask_missing])
-
+    
+    # Print evaluation metrics
     print("Evaluation Metrics for KDE Imputation:")
     print(f"Mean Squared Error: {mse:.4f}")
     print(f"Mean Absolute Error: {mae:.4f}")
